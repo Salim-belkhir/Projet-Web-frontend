@@ -109,7 +109,6 @@
                     <th>Date de Fin</th>
                     <th>Prix Total</th>
                     <th></th>
-                    <th></th>
                 </tr>
                 <tr v-for="res in reservations" :key="res.id">
                     <td> {{res.id}}</td>
@@ -118,7 +117,6 @@
                     <td> {{ res.dateDeb }} </td>
                     <td> {{ res.dateFin}} </td>
                     <td> {{ res.prixTotal }} </td>
-                    <td><button class="maj" @click="UpdateReservation(res)">Mettre à jour</button></td>
                     <td><button class="delete" @click="DeleteReservation(res.id)">Supprimer</button></td>
                 </tr>
             </table>
@@ -213,9 +211,6 @@ export default {
     },
     methods : {
         Reservations(){
-            console.log(this.cars.length)
-            console.log("je suis dans le mounted")
-
             for(let j = 0; j < this.cars.length ; j++){
                 console.log("J'y arrive pas")
                 console.log(this.cars)
@@ -246,74 +241,69 @@ export default {
                     ville : this.ville,
                     code : this.code, 
                     mail : this.mail, 
-                    numero : this.numero
+                    numero : this.numero,
+                    password : this.password
                 }
                 fetch('http://localhost:8000/api/stuff/societies/' + this.$store.getters.getUserId, {
                     headers : {
-                        'Authorization' : `Bearer ${this.$store.getters.getUserToken}`
+                        'Authorization' : `Bearer ${this.$store.getters.getUserToken}`,
+                        'Accept' : 'application/json',
+                        'Content-Type' : 'application/json'
                     },
                     method : 'put',
                     body : JSON.stringify(society)
                 })
+                console.log("mise a jour entreprise")
                 
             }
-            
-        },
-        UpdateReservation(res){
-            res
-            /*if(this.$store.getters.getSociety){
-                for(let j = 0; j < this.cars.length ; j++){
-                    fetch('http://localhost:8000/api/stuff/reservations/cars/'+this.cars[j].id)
-                    .then(data => data.json())
-                    .then( res => {
-                        for(let y = 0; y < res.length ; y++){
-                            let reservation = {
-                                id : res[y].idReservation,
-                                idVoiture : res[y].idVoiture,
-                                idClient : res[y].idClient,
-                                dateDeb : res[y].date_debut.substr(0,10),
-                                dateFin : res[y].date_fin.substr(0,10),
-                                prixTotal : res[y].prixTotal
-                            };
-                            this.reservations.push(reservation);
-                        }
-                    })
+            else {
+                const client = {
+                    nom : this.nom,
+                    prenom : this.prenom,
+                    rue : this.rue,
+                    ville : this.ville,
+                    code : this.code, 
+                    mail : this.mail, 
+                    numero : this.numero,
+                    password : this.password
                 }
-            }
-            else{
-                fetch('http://localhost:8000/api/stuff/reservations/clients/'+this.$store.getters.getUserId)
-                .then( data => data.json())
-                .then( res => {
-                    for(let y=0; y<res.length ; y++){
-                        let reservation = {
-                            id : res[y].idReservation,
-                            idVoiture : res[y].idVoiture,
-                            idClient : res[y].idClient,
-                            dateDeb : res[y].date_debut.substr(0,10),
-                            dateFin : res[y].date_fin.substr(0,10),
-                            prixTotal : res[y].prixTotal
-                        };
-                        this.reservations.push(reservation);
-                    }
+                fetch('http://localhost:8000/api/stuff/clients/'+ this.$store.getters.getUserId, {
+                    headers : {
+                        'Authorization' : `Bearer ${this.$store.getters.getUserToken}`,
+                        'Accept' : 'application/json',
+                        'Content-Type' : 'application/json'
+                    },
+                    method : 'put',
+                    body : JSON.stringify(client)
                 })
-            }*/
+                console.log("Mise a jour client")
+                console.log(client)
+            }
+        },
+        DeleteReservation(id){
+            console.log("J'envoie l'ordre de suppression")
+            this.$router.push({name : 'delete'});
+            fetch('http://localhost:8000/api/stuff/reservations/'+id, {
+                headers : {
+                    'Authorization' : `Bearer ${this.$store.getters.getUserToken}`,
+                    'Accept' : 'application/json',
+                    'Content-Type' : 'application/json'
+                },
+                method: 'delete'
+            })
         },
         SupprimerVoiture(car){
-            console.log(car.id)
+            this.$router.push({name : 'delete'});
             fetch('http://localhost:8000/api/stuff/cars/'+car.id, {
                 headers : {
-                    'Authorization' : `Bearer ${this.$store.getters.getUserToken}`
+                    'Authorization' : `Bearer ${this.$store.getters.getUserToken}`,
+                    'Accept' : 'application/json',
+                    'Content-Type' : 'application/json'
                 },
                 method : 'DELETE'
             })
             .then(res => res.json())
-            .then(response => console.log(response))
-            for(let j=0 ; j <this.cars.length; j++){
-                if(this.cars[j].id == car.id){
-                    this.cars[j].show = false;
-                }
-            }
-            
+            .then(response => console.log(response))        
         },
         Update(id){
             this.$router.push({ name : 'add-car', params : id })

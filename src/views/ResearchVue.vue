@@ -8,7 +8,7 @@
 
             <div>
                 <label for="lieu">Localisation</label>
-                <input class="val" type="text" v-model="localisation">
+                <input class="val" type="text" required v-model="localisation">
                 <datalist >
                     <option value="Montpellier" >Montpellier</option>
                 </datalist>
@@ -16,12 +16,12 @@
 
             <div>
                 <label for="date-début">Date de début</label>
-                <input class="val" type="date" id="start" name="date-début"  min="2022-03-28" max="2024-12-31" v-model="dateDeb">
+                <input class="val" type="date" id="start" name="date-début"  min="2022-03-28" max="2024-12-31" required v-model="dateDeb">
             </div>
 
             <div>
                 <label for="date-fin">Date de fin</label>
-                <input class="val" type="date" id="end" name="date-fin"  min="2022-03-28" max="2024-12-31" v-model="dateFin">
+                <input class="val" type="date" id="end" name="date-fin"  min="2022-03-28" max="2024-12-31" required v-model="dateFin">
             </div>
 
             <div>
@@ -49,19 +49,23 @@
             </div>
         </form>
 
+
+
         <h3 v-if="showResults">Résultats de la recherche du {{ dateDeb }} au {{ dateFin }}</h3>
 
-        <div>
+        <div v-if="showResults">
             <div>
                 <div class="container">
-                    <div id="suggestion" v-for="car in cars" :key="car.id">
-                        <div id="photo"> Photo </div>
-                        <div id="marque">Marque : {{car.marque}}</div>
-                        <div id="modele">Modèle : {{car.modele}}</div>
-                        <div id="tarif">Tarif : {{car.prix}}€/jour</div>
-                        <div id="type">Type de voiture :{{car.type}}</div>
-                        <div id="societe">Société : {{car.nomEntreprise}}</div>
-                        <div id="reserver"><router-link :to="{ name : 'reservation', params : car.id }"><input type="submit" value="Réserver"></router-link></div>
+                    <div v-for="x in cars" v-bind:key="x.id">
+                        <div  class="cards"  v-if="x.showCar">
+                            <div id="imageCar"><img :src="x.photo" alt="" srcset=""></div>
+                            <div id="marque">Marque : {{x.marque}}</div>
+                            <div id="modele">Modèle : {{x.modele}}</div>
+                            <div id="tarif">Tarif : {{x.prix}}€/jour </div>
+                            <div id="typeCar">Type de Voiture : {{x.type}}</div>
+                            <div id="reserver"><button :disabled="$store.getters.getUserId == null" @click="Reservation(x.id)">Réserver</button></div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -86,6 +90,29 @@ export default {
         }
     },
     created(){
+        fetch('http://localhost:8000/api/stuff/cars')
+        .then(res => res.json())
+        .then( data => {
+            for(let i = 0; i < data.length; i++){
+                console.log(data[i])
+                let car = {
+                        id: data[i].idVoiture,
+                        marque: data[i].Marque,
+                        modele : data[i].Modèle,
+                        localisation: data[i].Localisation,
+                        prix : data[i].PrixJournalier,
+                        idEntreprise : data[i].idEntreprise,
+                        idType : data[i].idTypeVoiture,
+                        photo : data[i].photo,
+                        type : data[i].libelléType,
+                        showCar : true
+                    }
+                    console.log(car)
+                this.cars.push(car)
+            }
+        });
+        
+
         fetch('http://localhost:8000/api/stuff/types')
         .then(data => data.json())
         .then(response => {
@@ -98,17 +125,24 @@ export default {
                 select.appendChild(option);
             }
         });
-
     },
     methods : {
         Onsubmit(){
-            /*let dateDebut = this.dateDeb.split("/");
-            let dateFinale = this.dateFin.split("/");
-            let dateDebFormat = dateDebut[4]+"-"+dateDebut[3]+"-"+dateDebut[2];
-            let dateFinFormat = dateFinale[4]+"-"+dateFinale[3]+"-"+dateFinale[2];
-            console.log(dateDebFormat);
-            console.log(dateFinFormat);*/
-            let research = { 
+            this.$store.commit('CHANGE_DATE_DEBUT', this.dateDeb);
+            this.$store.commit('CHANGE_DATE_FIN', this.dateFin);
+            this.showResults = true;
+            for(let i=0 ; i<this.cars.length; i++){
+                if(this.cars[i].localisation != this.localisation){
+                    this.cars[i].showCar = false;
+                }
+                if(this.cars[i].prix > this.prixMax && this.prixMax!=null){
+                    this.cars[i].showCar = false;
+                }
+                if(this.cars[i].type != this.type && this.type!=""){
+                    this.cars[i].showCar = false;
+                }
+            }
+            /*let research = { 
                 localisation : this.localisation,
                 dateDeb : this.dateDeb,
                 dateFin : this.dateFin, 
@@ -139,15 +173,15 @@ export default {
                         type : data[i].libelléType,
                         images : []
                     }
-                    console.log(car.id)
                     tab.push(car);
-
                 }
                 //console.log(tab)
                 this.cars = tab;
                 //console.log(this.cars)
-            });
-            this.showResults = true;
+            });*/
+        },
+        Reservation(car){
+            this.$router.push({name : 'reservation', params : { id : car}})
         }
     }
 }
@@ -156,6 +190,78 @@ export default {
 
 
 <style scoped>
+
+#marque{
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 1;
+}
+
+#modele{
+    grid-row-start: 2;
+    grid-column-start: 4;
+}
+
+#reserver{
+    grid-column-start: 5;
+    grid-column-end: 6;
+    grid-row-start: 5;
+}
+
+#reserver button{
+    border: none;
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    background-color: green;
+}
+
+#reserver button:hover{
+    background-color: lightgreen;
+}
+
+#tarif{
+    padding-top: 10px;
+    grid-row-start: 5;
+    grid-column-start: 2;
+}
+
+#typeCar{
+    grid-row-start: 3;
+    grid-column-start: 4;
+}
+
+#imageCar{    
+    grid-row-start: 1;
+    grid-row-end: 4;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.cards{
+    border : black 3px solid;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    grid-template-rows: auto auto auto auto;
+    text-align: center;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.cards img{
+    border-radius: 6px;
+    width : 200px;
+}
+
+.container{
+    margin-top: 30px;
+    margin-right: 10%;
+    margin-left: 10%;
+    display : grid;
+    grid-template-columns: auto auto;
+}
  
  /** Formulaire **/
 

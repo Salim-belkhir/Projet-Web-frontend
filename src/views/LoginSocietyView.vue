@@ -68,11 +68,10 @@ export default {
                     alert("Une erreur s'est produite")
                     return;
                 }
-
                 this.$store.commit("CHANGE_TOKEN", res.token);
                 this.$store.commit("CHANGE_USERID", res.userId);
-                this.$store.commit("CHANGE_SOCIETY", true);
                 if(this.$store.getters.getUserToken != null){
+                    this.$store.commit("CHANGE_SOCIETY", true);
                     this.$router.push({ name : 'myaccount'});
                 }
             }); 

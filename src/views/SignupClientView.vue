@@ -24,7 +24,7 @@
                     </div>
 
                     <div>
-                        <input type="submit" value="Suivant" @click="Next">
+                        <input id="next" type="submit" value="Suivant" @click="Next">
                     </div>
 
                 </div>
@@ -149,6 +149,15 @@ export default {
 
 
 <style scoped>
+
+#next{
+    padding: 4px;
+    border: none;
+}
+
+#next:hover{
+    background-color: rgb(79, 144, 241);
+}
 
 
 #page{

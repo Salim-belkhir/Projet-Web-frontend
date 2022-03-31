@@ -3,8 +3,6 @@
         <h1>Ajout de voiture</h1>
 
 
-        <h2> {{id}}  </h2>
-
         <div>
             <label for="marque">Marque de la voiture : </label>
             <input type="text" required v-model="marque">

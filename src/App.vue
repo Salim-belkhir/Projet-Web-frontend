@@ -9,7 +9,7 @@
           <router-link to="/login-society">Espace Professionnel</router-link>
         </div>
       </div>
-    <router-link to="/research">Rechercher</router-link> 
+    <router-link to="/research" v-if="!$store.getters.getSociety">Rechercher</router-link> 
     <div class="dropdown">
       <div class="dropbtn" v-if="$store.getters.getUserId == null && $store.getters.getUserToken == null">Inscription</div>
         <div class="dropdown-content">

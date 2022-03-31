@@ -3,11 +3,13 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     research : [],
-    isSociety : true,
+    isSociety : false,
     user : {
       token: null,
       userId : null
-    }
+    },
+    dateDebut : "",
+    dateFin : ""
   },
   getters: {
     getSociety(state){
@@ -24,6 +26,12 @@ export default createStore({
     },
     getResearch(state){
       return state.research;
+    },
+    getDateDebut(state){
+      return state.dateDebut;
+    },
+    getDateFin(state){
+      return state.dateFin;
     }
   },
   mutations: {
@@ -37,9 +45,14 @@ export default createStore({
       state.user.token = payload;
     },
     CHANGE_RESEARCH(state, payload){
-      state.research = payload
+      state.research = payload;
+    },
+    CHANGE_DATE_DEBUT(state, payload){
+      state.dateDebut = payload;
+    },
+    CHANGE_DATE_FIN(state, payload){
+      state.dateFin = payload;
     }
-    
   },
   actions: {
     changeSociety(context){

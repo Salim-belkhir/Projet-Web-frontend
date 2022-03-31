@@ -11,6 +11,8 @@ import LoginSocietyView from '../views/LoginSocietyView.vue'
 import SignupSocietyView from '../views/SignupSocietyView.vue'
 import Research from '../views/ResearchVue.vue'
 import AddCar from '../views/AddCarView.vue'
+import DeleteView from '../views/DeleteView.vue'
+
 
 
 const routes = [
@@ -112,6 +114,14 @@ const routes = [
     component : NotFound,
     meta : {
       title : '404 Not Found'
+    }
+  },
+  {
+    path : '/delete',
+    name : 'delete',
+    component : DeleteView,
+    meta : {
+      title : 'Suppression'
     }
   }
 ]

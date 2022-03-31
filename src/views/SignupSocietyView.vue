@@ -136,6 +136,17 @@ export default {
 
 <style scoped>
 
+
+#next{
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+}
+
+#next:hover{
+    background-color: rgb(79, 144, 241);
+}
+
 form{
     padding-top: 20px;
 }
